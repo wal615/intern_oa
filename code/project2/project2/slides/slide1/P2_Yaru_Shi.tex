@@ -1,0 +1,106 @@
+\documentclass{beamer}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{default} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{multirow}
+\usepackage{color}
+
+\title[Your Short Title]{CS 583 Project 2: Twitter Data Mining}
+\author{Yaru Shi \& Lei Zheng}
+\institute{University of Illinois at Chicago}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Uncomment these lines for an automatically generated outline.
+%\begin{frame}{Outline}
+%  \tableofcontents
+%\end{frame}
+
+\section{Data Pre-processing}
+
+\begin{frame}{Data Pre-processing}
+
+\begin{itemize}
+  \item Data cleaning
+  	\begin{enumerate}
+  		\item  Removed "mixed" category data;
+  		\item Filtered missing-label data;
+  		\item Discarded labels out of the range, e.g. !!!.
+  	\end{enumerate} 
+  \vskip 0.25cm
+  \item Features extraction
+    \begin{enumerate}
+    	\item Length of tweets are limited: 140 characters;
+    	\item Not enough information if we put too many words in one bag;
+    	\item Unigram is chosen.
+    \end{enumerate}
+  \vskip 0.25cm
+  \item Vectorization:
+  	\begin{enumerate}
+  		\item Transformed the data into numerical feature vectors;
+  		\item Re-weighted data: tf-idf %lower the influence of those stopping words
+  	\end{enumerate}
+  \vskip 0.5cm  
+\end{itemize}
+
+
+
+\end{frame}
+\section{Classification}
+\begin{frame}{Classification and Results}
+\begin{itemize}
+	\item \color{blue} blue \color{black} represents Obama; \color{red} red \color{black}represents Romney
+\end{itemize}
+\begin{center}
+\begin{tabular}{|p{2cm}|c c c| c c c| c|}
+\hline
+Algorithms & \multicolumn{7}{|c|}{Results} \\
+\hline
+&\multicolumn{3}{|c|}{Positive class} & \multicolumn{3}{c|}{Negative class} & Overall\\
+\hline
+& p & r & F  & p & r & F  &\\
+\hline
+\multirow{2}{*}{Naive Bayes} & \color{blue}0.64 & \color{blue}0.45 & \color{blue} 0.52& \color{blue}0.50 & \color{blue}0.49 &\color{blue}0.49 & \color{blue} 0.48\\
+ &\color{red} 0.46 &\color{red}0.27  &\color{red} 0.34  & \color{red}0.43  & \color{red}0.61 & \color{red}0.49 &\color{red} 0.42\\
+\hline
+\multirow{2}{*}{Logistic} & \color{blue}0.53 & \color{blue} 0.64& \color{blue}0.58 & \color{blue} 0.62& \color{blue} 0.57 &\color{blue} 0.58 & \color{blue} 0.57\\
+ &\color{red}0.24  &\color{red}0.61  &\color{red} 0.34  & \color{red}0.86  & \color{red}0.58 & \color{red} 0.68 &\color{red} 0.55 \\
+\hline
+\multirow{2}{*}{SVM} & \color{blue} 0.59 & \color{blue} 0.61 & \color{blue} 0.59 & \color{blue} 0.61 &\color{blue} 0.58 & \color{blue} 0.57 & \color{blue} 0.57\\
+ & \color{red} 0.38 & \color{red} 0.54 & \color{red} 0.44 &  \color{red} 0.77 & \color{red} 0.63 & \color{red} 0.68 & \color{red} 0.57\\
+\hline
+
+\end{tabular}
+\end{center}
+\end{frame}
+
+\section{Next Steps}
+\begin{frame}{Next Steps}
+\begin{itemize}
+	\item Data Balance: Tweets voting for Romney is half less than those are against him.\\*
+		Solution: Augment data
+	\item Feature Selection: LASSO, Forward/Backward feature selection, etc;
+	\item Parameter Tuning: kernel function, penalized parameter, penalty methods.
+\end{itemize}
+
+\end{frame}
+\end{document}

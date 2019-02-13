@@ -1,0 +1,155 @@
+%%% Preamble
+\documentclass[paper=a4, fontsize=12pt]{scrartcl}	
+\usepackage[T1]{fontenc}
+\usepackage{fourier}
+\usepackage{setspace}
+\usepackage[english]{babel}															% English language/hyphenation
+\usepackage[protrusion=true,expansion=true]{microtype}				% Better typography
+\usepackage{amsmath,amsfonts,amsthm}										% Math packages
+\usepackage[pdftex]{graphicx}														% Enable pdflatex
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{float}
+
+%%% Custom sectioning (sectsty package)
+\usepackage{sectsty}												% Custom sectioning (see below)
+\allsectionsfont{\centering \normalfont\scshape}	% Change font of al section commands
+
+
+%%% Custom headers/footers (fancyhdr package)
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\fancyhead{}														% No page header
+\fancyfoot[L]{}		% You may remove/edit this line 
+\fancyfoot[C]{}													% Empty
+\fancyfoot[R]{\thepage}									% Pagenumbering
+\renewcommand{\headrulewidth}{0pt}			% Remove header underlines
+\renewcommand{\footrulewidth}{0pt}				% Remove footer underlines
+\setlength{\headheight}{0pt}
+
+
+%%% Equation and float numbering
+\numberwithin{equation}{section}		
+\numberwithin{figure}{section}			
+\numberwithin{table}{section}				
+
+
+%%% Maketitle metadata
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 	% Horizontal rule
+
+\title{
+		%\vspace{-1in} 	
+		\usefont{OT1}{bch}{b}{n}
+		\normalfont \normalsize \textsc{CS 583: Data Mining and Text Mining} \\ [10pt]
+		\horrule{0.5pt} \\[0.4cm]
+		\huge Final Report of Project 2 \\
+		\horrule{2pt} \\[0.5cm]
+}
+\author{
+		\normalfont 								\normalsize
+        Yaru Shi $\&$ Lei Zheng\\[-3pt]		\normalsize
+        \today
+}
+\date{}
+
+
+%%% Begin document
+\begin{document}
+\maketitle
+\section{Abstract}
+\singlespacing
+Presidential Election, held every 4 years, is one of the most important events in the United States. With the popularity of social media use, the potential of these platforms to be an influence in elections has been drawn more and more attentions[1]. In this report, we investigate the role of the social media twitter during the 2012 U.S. Presidential Election. The objective of this study was to identify the polarities of two candidates using historical Twitter data. A total of 14,000 tweets mentioned two candidates were pulled out from Twitter; human-labels were given in three categories for each tweets; various supervised learning methods were applied to find the best classifier in classifying the sentiment in such tweets. The analyses showed that a voting method of combing three supervised learning methods performed the best, and the social media data do contain some useful messages to infer the election results.
+
+\section{Introduction}
+\singlespacing
+Sentiment analysis, also known as opinion mining, is a process that aims to explore peoples' attitudes towards written languages via data mining techniques. It is a multidisciplinary study area which involves many fields such as natural language processing, statistic, and artificial intelligence. Since early 2000s, lots of researchers have put numerous efforts in developing various techniques in this interesting area[2].\\[5pt]
+The invention of social media has changed public and interpersonal communications. Instead of obtaining information from traditional paper-based media, people turn to various social online platforms to search and share information[3]. On the other hand, such platforms provide a novel data resource for researchers, which contains a tantalizing bounty of information in various research areas. Since most online opinions are in text, sentiment analysis turns to be a very useful tool in analyzing such data. \\[5pt]
+During the presidential elections, social media plays a significant role in obtaining public standpoints towards candidates. Study[3] has shown that social media is a "information shortcuts" and "cues" to the directions of mainstream media coverage such as television and radio. Furthermore, various open-sourced APIs has lowered the cost of data crawling process, making the social media data readily to use without many efforts in data collection. Therefore, it is naturally to make use of social media data to predict the election results. \\[5pt]
+In this report we described a framework for analyzing Twitter data during the 2012 Presidential Election. The goal is to train a good classifier that can correctly identify the polarity of a tweet. To simplify the problem, we only considered if a tweet contained positive, neutral, or negative sentiment. And we assumed that each tweet can convey a single category of opinion. \\[5pt]
+In the next few paragraphs, we first described the data and techniques used in training the classifier in Section 3; then we presented the evaluation metrics associated with our research in Section 4; finally we concluded the findings we had during the analyses and discussed the challenges of applying this classifier to general election data in Section 5.
+
+\section{Technique}
+\subsection{Data}
+\textit{\textbf{Data Collection}}: Since there were two candidates back in 2012, two domains of data were created for the candidates. For both Obama and Romney, 7000 tweets were streamed and coded by human being into three categories. Noted that, while all the steps of analyses are the same, the two datasets are trained and evaluated separately due to the difference in domain knowledge. \\[5pt]
+\textit{\textbf{Data Clean}}: Before doing any real analyses, we obtained some descriptive statistics of the data and did some adjustment to remove the inconsistency among the data. Since only 3 categories were defined in the project description, all the tweets with labels out of range were discarded in the data cleaning process. This decreased the data size to 5624 for Obama and 5648 for Romney. \\[5pt]
+\textit{\textbf{Data Pre-processing}}: Since the tweet data is in text format, it needs to be transformed into the structured data. Features used here are the unigrams of the tweets, that is, the bag of individual words. The size of bags of words were chosen empirically, but it also makes sense in statistics due to the limited length of tweets. If we put two or more words in one bag, there will be not enough features thus not enough abstracted information in the analytic set. After we obtained the features and counted the frequency of features in each tweet, tf-idf was applied on the vectorized data in order to adjust the influence of stop-words.
+
+\subsection{Classification Method}
+Several classification methods were tried here. And all of them are implemented by the scikit-learn toolkit in Python. \\[5pt]
+\textit{\textbf{Naive Bayes Classification}}: As the most well-known and well-studied method in supervised learning, naive bayes classifier has been widely applied in sentiment analyses. Because of its simplicity and intuitiveness, naive bayes classifier is always treated as baseline for classification task. However, due to the strong assumption of the distribution and the conditional independence constraint in features, this method might not performance well when the samples are not representative of the general population. Additionally, compared with other popular methods such as logistic regression or SVM, naive classifier is not very efficient. \\[5pt]
+\textit{\textbf{Multivariate Logistic Regression}}: Logistic regression, initially introduced to solve the prediction problems in categorical data, is inherently suitable to solve this problem. Since we have 3 categories to predict here, multivariate logistic regression was chosen here. Due to the large volume of features compared with lines of tweets, we used the L1 penalized method, which will force the feature estimations which are close to zero converge to zero more quickly. This method is computational efficient and designed to solve the high dimensional modeling problem.  \\[5pt]
+\textit{\textbf{Support Vector Machine}}: In general, Support Vector Machine(SVM) is a linear learning system that builds two-class. Due to its high precision in text mining task, we also applied this classifier on our data. Some different strategies were applied in order to adjust this method in 3-category case. It is called one-vs-the-rest(OVR) multilabel strategy. Instead of fitting one classifier, OVR fits one classifier for each class. In each classifier, the class is fitted against all the other class in the data. There are two main advantages of this method, one is that this method runs very fast; and the other is that the results will be very easy to understand.  \\[5pt]
+\textit{\textbf{Your Method}}:
+\section{Evaluation}
+To evaluate the classification performance of the classifiers described above, we used 10-cross-fold validation while training the classifier. Additionally, the test tweets were provided by the professor. Within the test set, there are also two sheets of human-labeled data, corresponding to Obama and Romney, respectively. \\[5pt]
+\ref{table:table 1} and \ref{table:table 2} are the results of 10-fold-cross-validation for Obama and Romney, respectively. Here we only showed the results for positive and negative class as they are usually contained more information during the election. \\[5pt]
+From the table \ref{table:table 1}, we can see that SVM and logistic regression both perform better compared with naive bayes classifier. 
+\begin{table}[H]
+\begin{tabular}{|p{4cm}|c c c| c c c| c|}
+\hline Algorithms&\multicolumn{3}{|c|}{Positive class} & \multicolumn{3}{c|}{Negative class} & Average\\
+\hline
+& precision & recall & F1-score  & precision & recall & F1-score  &\\
+\hline
+Naive Bayes & 0.64 & 0.45 & 0.52& 0.50 & 0.49 &0.49 & 0.51\\
+\hline
+Logistic Regression& 0.53 &  0.64& 0.58 &  0.62&  0.57 & 0.58 &  0.58\\
+\hline
+SVM& 0.59 &  0.61 & 0.59 & 0.61 & 0.58 &  0.57 &  0.58\\
+\hline
+\end{tabular}
+\caption{10-fold-cross-validation Results for Obama}\label{table:table 1}
+\end{table}
+For Romney's case, we can see that SVM performs the best based on the results in table \ref{table:table 2}. 
+\begin{table}[H]
+\begin{tabular}{|p{4cm}|c c c| c c c| c|}
+\hline Algorithms&\multicolumn{3}{|c|}{Positive class} & \multicolumn{3}{c|}{Negative class} & Overall\\
+\hline
+& precision & recall & F1-score  & precision & recall & F1-score  &\\
+\hline
+Naive Bayes & 0.46 &0.27  & 0.34  &0.43  & 0.61 & 0.49 & 0.42\\
+\hline
+Logistic Regression & 0.24  &0.61  &0.34  & 0.86  & 0.58 & 0.68 &0.51\\
+\hline
+SVM&  0.38 &  0.54 &  0.44 &   0.77 &  0.63 & 0.68 &  0.56\\
+\hline
+\end{tabular}
+\caption{10-fold-cross-validation Results for Romney}\label{table:table 2}
+\end{table}
+In general, Obama data gives better results compared with Romney. This makes sense as Obama data is more balanced and it is known that both logistic regression and SVM are sensitive to the balance of the data. \\[5pt]
+Based on the above performance of different classifier, we decided to choose the voted classifier as the final classifier to predict the sentiment in 2012 Presidential Election. The following table gives the results on the test dataset. 
+\begin{table}[H]
+\begin{tabular}{|p{4cm}|c c c| c c c|}
+\hline Candidate&\multicolumn{3}{|c|}{Positive class} & \multicolumn{3}{c|}{Negative class}\\
+\hline
+& precision & recall & F1-score  & precision & recall & F1-score\\
+\hline
+Obama & 0.63 &0.54 & 0.58  &0.56  & 0.65 & 0.60\\
+\hline
+Romney & 0.69  &0.44  &0.54  & 0.64  & 0.84 & 0.73\\
+\hline
+Average & 0.66 & 0.49 & 0.56 & 0.60 & 0.75 & 0.67\\
+\hline
+\end{tabular}
+\caption{Classification Results on Test Data}\label{table:table 3}
+\end{table}
+
+\section{Conclusion}
+In the report, we used a set of classifier techniques to predict the polarity of tweets. The results have showed that the best performance is achieved by combing three classifier together. This experiment also gives guidance of sampling strategy in data collection. In order to obtain a good classifier for sentiment prediction in tweet data, we need to make the data as balance as possible. On the other hand, as the golden standard in classification, human label should be as precise as possible to avoid any mistakes ore bias introduced into the classifier. Based on the data, we can also see that the social media does shed light on the results of Presidential Election.
+
+
+\begin{thebibliography}{9}
+
+\bibitem{r1}
+\textsc{Hong, S. and Nadler, D.} (2012). \textit{Which candidates do the public discuss online in an election campaign? The use of social media by 2012 presidential candidates and its impact on candidate salience.”}, Government Information Quarterly, 29(4), 455-461.
+
+
+\bibitem{r2}
+\textsc{Turney, P.}  (2002). \textit{Thumbs up or Thumbs Down?}  Proceedings of the 40th Annual Meeting on Association for Computational Linguistics.
+
+\bibitem{r3}
+\textsc{Baum, M. A., Groeling, T.}  (2009). \textit{Shot by the messenger: Partisan cues and public opinion regarding national security and war}  Political Behavior, 31(2), 157-186.
+
+\end{thebibliography}
+
+\end{document}

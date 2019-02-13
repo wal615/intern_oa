@@ -1,0 +1,5 @@
+\beamer@endinputifotherversion {3.36pt}
+\select@language {english}
+\beamer@sectionintoc {1}{Data Pre-processing}{2}{0}{1}
+\beamer@sectionintoc {2}{Classification}{3}{0}{2}
+\beamer@sectionintoc {3}{Next Steps}{4}{0}{3}
